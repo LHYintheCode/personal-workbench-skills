@@ -1,0 +1,4 @@
+interface:
+  display_name: "抖音账号数据"
+  short_description: "拉取本人抖音创作者中心数据并更新 Workbench"
+  default_prompt: "Use $douyin-account-data to collect my authorized Douyin Creator analytics for Personal AI Workbench."

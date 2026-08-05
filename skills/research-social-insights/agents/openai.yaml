@@ -1,0 +1,5 @@
+interface:
+  display_name: "社媒洞察研究"
+  short_description: "主动扫描近期 AI 风向并深挖主题讨论、评论证据与真实需求"
+  default_prompt: "Use $research-social-insights to scan recent AI trends or deeply research one topic."
+
