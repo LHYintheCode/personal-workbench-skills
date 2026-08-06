@@ -156,11 +156,6 @@ py -3 -m venv .venv
 
 Playwright 官方说明，登录状态文件可能包含可冒用账号的 Cookie 与请求头，不能提交到仓库；新版 Chrome 也不支持直接自动化日常使用的默认用户配置目录。因此 Windows 适配器应使用专门的自动化配置目录。参见 [Authentication](https://playwright.dev/docs/auth) 和 [`launchPersistentContext`](https://playwright.dev/docs/api/class-browsertype#browser-type-launch-persistent-context)。
 
-实现时参考了以下公开项目的架构：
-
-- [XBuilderLAB/cheat-on-content 的 douyin-session](https://github.com/XBuilderLAB/cheat-on-content/tree/main/adapters/perf-data/douyin-session)：参考 Playwright 持久化登录目录、首次扫码和单浏览器会话；本仓库不采用其中的接口响应拦截方式。
-- [NanmiCoder/MediaCrawler](https://github.com/NanmiCoder/MediaCrawler)：参考 Windows 下 Chrome/Edge 检测、Playwright 持久化上下文、扫码登录和 CDP/标准模式分层；其许可证与本仓库不同，只参考架构，不复制源码。
-
 完整安装、浏览器选择和隐私模型见 [`platform-support.md`](skills/douyin-account-data/references/platform-support.md)。无论使用哪种浏览器方案，Skill 都不能读取、打印、复制或导出密码、Cookie、登录令牌和会话参数。
 
 ## 平台规则与使用风险
