@@ -43,7 +43,7 @@ done
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
   printf 'status=unsupported_platform\n' >&2
-  printf 'message=Ego Lite currently supports macOS only; live Douyin collection is unavailable on this platform.\n' >&2
+  printf 'message=This entry point requires macOS and Ego Lite. On Windows, use scripts/collect_playwright.py instead.\n' >&2
   exit 20
 fi
 
