@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Personal Workbench Skills</title>
+  <desc id="desc">Agent skills for Personal AI Workbench.</desc>
+  <defs>
+    <pattern id="dot-type" width="8" height="8" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.65" fill="#181818"/>
+    </pattern>
+    <pattern id="dot-field" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.25" fill="#181818" fill-opacity=".14"/>
+    </pattern>
+    <clipPath id="frame"><rect width="1200" height="360" rx="12"/></clipPath>
+    <clipPath id="orb"><circle cx="975" cy="181" r="118"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="1200" height="360" fill="#F6F6F4"/>
+
+    <g font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif">
+      <!-- Header -->
+      <g transform="translate(38 30)">
+        <rect width="28" height="28" rx="7" fill="#181818"/>
+        <path d="M6 8 10.5 21 14 13.5 17.5 21 22 8" fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <circle cx="22" cy="8" r="2.2" fill="#7C3AED"/>
+        <text x="41" y="19" fill="#181818" font-size="13" font-weight="700" letter-spacing=".4">PERSONAL WORKBENCH SKILLS</text>
+      </g>
+      <g transform="translate(1042 44)" fill="#686868" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" font-weight="700" letter-spacing="1.4">
+        <circle cx="0" cy="-3" r="3" fill="#7C3AED"/>
+        <text x="11" y="0">SKILLS / 002</text>
+      </g>
+      <path d="M38 76h1124" stroke="#181818" stroke-opacity=".18"/>
+
+      <!-- Minimal title -->
+      <g transform="translate(50 111)">
+        <text x="0" y="66" fill="url(#dot-type)" font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif" font-size="82" font-weight="900" letter-spacing="-3">PERSONAL</text>
+        <text x="0" y="142" fill="#181818" font-size="62" font-weight="760" letter-spacing="-2.5">WORKBENCH SKILLS</text>
+        <rect x="2" y="165" width="44" height="4" rx="2" fill="#7C3AED"/>
+      </g>
+
+      <!-- Two skills branching from one workbench -->
+      <g clip-path="url(#orb)">
+        <rect x="848" y="54" width="254" height="254" fill="url(#dot-field)"/>
+      </g>
+      <circle cx="975" cy="181" r="118" fill="none" stroke="#181818" stroke-opacity=".16"/>
+      <circle cx="975" cy="181" r="88" fill="#F6F6F4" stroke="#181818"/>
+      <path d="M975 181 922 136M975 181l53 45" fill="none" stroke="#181818" stroke-width="3" stroke-linecap="round"/>
+
+      <g transform="translate(954 160)">
+        <rect width="42" height="42" rx="10" fill="#181818"/>
+        <path d="M9 11.5 15.5 31 21 20 26.5 31 33 11.5" fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.7"/>
+        <circle cx="33" cy="11.5" r="2.5" fill="#7C3AED"/>
+      </g>
+
+      <g transform="translate(894 108)">
+        <rect width="56" height="56" rx="12" fill="#F6F6F4" stroke="#181818" stroke-width="3"/>
+        <circle cx="28" cy="28" r="13" fill="none" stroke="#181818" stroke-width="2.5"/>
+        <circle cx="28" cy="28" r="4" fill="#7C3AED"/>
+        <path d="M28 8v7M28 41v7M8 28h7M41 28h7" stroke="#181818" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+
+      <g transform="translate(1000 198)">
+        <rect width="56" height="56" rx="12" fill="#F6F6F4" stroke="#181818" stroke-width="3"/>
+        <path d="M14 39V27M27 39V18M40 39V11" stroke="#181818" stroke-width="4" stroke-linecap="round"/>
+        <path d="M11 42h34" stroke="#181818" stroke-width="2" stroke-linecap="round"/>
+      </g>
+
+      <!-- Footer -->
+      <path d="M38 314h1124" stroke="#181818" stroke-opacity=".18"/>
+      <g transform="translate(40 338)" fill="#5F5F5C" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" font-weight="700" letter-spacing="1.5">
+        <text x="0">RESEARCH</text>
+        <circle cx="96" cy="-3" r="2" fill="#B4B4B0"/>
+        <text x="111">DATA</text>
+        <circle cx="169" cy="-3" r="2" fill="#B4B4B0"/>
+        <text x="184">LOCAL</text>
+      </g>
+      <text x="1162" y="338" text-anchor="end" fill="#8A8A86" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8" letter-spacing="1.2">AGENT-READY</text>
+    </g>
+  </g>
+  <rect x=".75" y=".75" width="1198.5" height="358.5" rx="11.25" fill="none" stroke="#181818" stroke-width="1.5"/>
+</svg>
