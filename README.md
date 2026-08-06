@@ -3,89 +3,90 @@
 Personal AI Workbench 的两个可独立安装 Agent Skills：
 
 - `research-social-insights`：扫描近期 AI 社媒风向，或围绕指定主题研究跨平台讨论、评论、回复、需求与反例。
-- `douyin-account-data`：从用户本人已授权登录的抖音创作者中心拉取账号数据，完成质量校验，并生成 Personal AI Workbench 抖音页面读取的完整数据文件。
+- `douyin-account-data`：从用户本人已授权登录的抖音创作者中心获取账号数据，完成质量校验，并生成 Personal AI Workbench 抖音页面读取的数据文件。
 
-这两个 Skill 遵循通用的 `SKILL.md` 目录结构，可交给支持 Agent Skills 的工具安装。最简单的安装方式是：
+## 交给 Agent 安装
 
-> 把本仓库链接发给你正在使用的 Agent，让它把需要的 Skill 安装到自己的 Skill 目录。
-
-例如：
+把本仓库地址发给支持 Agent Skills 的工具，例如 Codex、Claude Code 或 WorkBuddy：
 
 ```text
-请从这个仓库安装 research-social-insights 和 douyin-account-data：
-<本仓库的 GitHub 链接>
+https://github.com/oyorf/personal-workbench-skills
 ```
 
-不同 Agent 的本地目录和调用方式可能不同，由 Agent 自己完成适配。本仓库只维护一份 Skill 真源，不分别维护 Codex、Claude Code 或其他工具的副本。
-
-## Ego Lite 依赖
-
-两个 Skill 在读取需要登录态的社媒页面时都依赖 [Ego Lite](https://lite.ego.app/download) 提供的 `ego-browser`。其中抖音账号自动采集必须使用该能力。
-
-macOS 安装步骤：
-
-1. 打开 Ego Lite 官方下载页，按机器类型下载 Apple Silicon 或 Intel 版本。
-2. 安装并首次启动 Ego Lite。
-3. 完成 onboarding。Ego Lite 会安装 `ego-browser` 命令与配套 Skill，并尝试接入本机已有的 Agent 工具。
-4. 在 Ego Lite 中登录需要访问的平台。使用抖音 Skill 前，需要先登录本人有权访问的抖音创作者中心。
-5. 重新打开 Agent；如果 Agent 仍找不到 `ego-browser`，先确认 Ego Lite onboarding 已完成。
-
-登录态、Cookie、密码、浏览记录和下载的账号数据都不属于本仓库，禁止提交到 Git。
-
-## Windows 和 Linux
-
-Ego Lite 官方当前只支持 macOS；Windows 和 Linux 仍在路线图中，尚无明确发布时间。
-
-- `research-social-insights`：可以只使用公开网页来源运行，但必须把缺少的登录态社媒来源标记为覆盖降级。
-- `douyin-account-data`：自动采集暂不支持 Windows 或 Linux。不要用未经验证的浏览器脚本伪装为完整支持。
-- Personal AI Workbench 自身及其 synthetic demo 数据仍可在满足 Node.js 环境要求的平台运行。
-
-Ego Lite 发布 Windows/Linux 版本，或本项目增加经过验证的等价登录态浏览器适配器后，再扩展抖音采集支持。
-
-## Skill 1：社媒洞察
-
-适合这些请求：
+可以直接使用这条指令：
 
 ```text
-扫描最近 7 天 AI 圈里普通人正在做什么。
-围绕“个人知识库”深挖跨平台观点、评论和需求。
+请从这个仓库安装 research-social-insights 和 douyin-account-data，
+阅读各自的 SKILL.md、运行要求和安全边界，并适配到你自己的 Skill 目录。
 ```
 
-最终只向用户指定知识库的 `10_raw/social-insights/` 写入脱敏 Markdown 报告，不自动生成选题或修改 Wiki。
+不同 Agent 的本地目录和调用方式可能不同，由 Agent 自己完成适配。本仓库只维护一份 Skill 真源，不分别维护多个工具的副本。
 
-## Skill 2：抖音账号数据
+## 社媒洞察如何工作
 
-只处理用户本人有权访问的抖音创作者中心数据：
+`research-social-insights` 处理两类任务：扫描近期风向，或者围绕一个明确主题做深度研究。
+
+它从以下来源收集证据：
+
+- 官方公告、产品文档、公司博客和原始研究，用来确认事实与时间；
+- 科技新闻和专业网站，用来补充行业背景；
+- 小红书、抖音、微博、知乎等中文大众社媒；
+- X、Reddit、YouTube 等可用的海外社区；
+- 帖子下的一级评论和可见回复，用来发现真实任务、痛点、反例和事实纠正。
+
+标准研究会同时关注中文大众社媒和可用的海外社区，不限定单一语言；最终报告统一整理为中文。平台能否实际覆盖，取决于当次主题、网络环境、用户授权和页面是否可以可靠读取。无法读取的来源必须明确标记为覆盖降级，不能假装已经采集。
+
+公开网页使用当前 Agent 的网络搜索和网页打开能力。登录后才可见或必须交互的社媒页面，会通过用户已经授权的浏览器会话完成页面导航、DOM 读取、展开和点击。这部分操作的是实际网页界面，不调用平台官方开放 API，也不通过逆向接口、读取 Cookie 或绕过登录与反爬来获取数据。
+
+采集完成后，Skill 会区分事实、用户观点、作者观点与 Agent 综合判断，去除重复转载，保留反方和小众声音，并默认排除昵称、头像、账号 ID、地区等非必要个人信息。最终只向目标知识库的 `10_raw/social-insights/` 写入脱敏 Markdown 报告，不自动生成选题，也不修改 Wiki。
+
+详细流程见 [`research-social-insights/SKILL.md`](skills/research-social-insights/SKILL.md)。
+
+## 抖音账号数据如何工作
+
+`douyin-account-data` 只处理用户本人拥有或明确获权访问的抖音创作者中心。
+
+采集时，Agent 在用户已授权的创作者中心页面中模拟正常操作：打开数据页面、切换周期和标签、点击平台提供的导出按钮，并下载官方 Excel。Excel 没有覆盖的少量字段，才会从当前页面的可见内容中补充。它不调用抖音开放 API，不逆向私有接口，也不抓取其他创作者账号。
+
+完整数据链路是：
 
 ```text
-Ego Lite 登录态
-→ 官方 Excel 与页面数据
-→ 临时解析和数据质量门禁
-→ 30_self_media/douyin/current.json
-→ Personal AI Workbench 抖音页面
+本人已授权的创作者中心页面
+→ 官方 Excel 与必要的页面证据
+→ 临时目录解析
+→ 缺失、重复与口径一致性检查
+→ Workbench 数据契约
+→ <私人 Vault>/30_self_media/douyin/current.json
 ```
 
-它不抓取其他账号、不分析私信、不生成内容策略，也不替用户决定下一条拍什么。
+只有全部质量门禁通过后，Skill 才会原子替换上一版有效数据。官方 Excel、页面快照和解析中间文件只保存在本轮系统临时目录，成功或失败后都会删除。
 
-运行前需要：
+它不读取私信，不生成内容策略，不推荐下一条拍什么，也不会把真实作品 ID、账号标识或原始导出写进本仓库。详细字段、平台支持和失败回滚规则见 [`douyin-account-data/SKILL.md`](skills/douyin-account-data/SKILL.md)。
 
-- macOS；
-- Ego Lite 与 `ego-browser`；
-- Node.js 20+；
-- Python 3 与 `openpyxl`；
-- `jq`；
-- 已安装依赖的 Personal AI Workbench；
-- 一个不提交到公开 Git 的个人知识库目录。
+## 浏览器与平台支持
 
-详细执行边界见 [douyin-account-data/SKILL.md](skills/douyin-account-data/SKILL.md)。
+需要登录态的页面读取目前依赖 macOS 上的 Ego Lite 和 `ego-browser`。这里使用的是用户已有的登录状态和真实网页交互能力；Skill 不读取、打印、复制或保存密码、Cookie、登录令牌、浏览器配置和会话参数。
 
-## 隐私与授权
+- macOS：可以运行登录态社媒研究和抖音账号自动采集。
+- Windows/Linux：社媒研究只能使用可靠的公开网页来源，并明确标记覆盖降级；抖音自动采集当前不支持。
+- Personal AI Workbench 及其 synthetic demo 不依赖登录态浏览器，可以独立运行。
+
+## 平台规则与使用风险
+
+本仓库用于学习、研究和本地自动化实践，不代表任何平台授权，也不保证自动化交互不会触发扫码登录、验证码、账号确认、限流或其他风控。
+
+使用者需要确认自己拥有相关页面和账号的访问权限，并自行遵守平台服务条款与适用法律。遇到登录验证、权限门禁、反爬提示或速率限制时，Skill 必须停止当前来源并交还用户处理，不提供绕过方案。
+
+因无授权访问、违反平台规则或不当自动化造成的账号限制及其他损失，由使用者自行承担。维护者只提供学习方案和数据处理示例，不承诺规避平台风控。
+
+## 隐私边界
 
 - 只访问用户主动授权且本人有权访问的账号或页面。
 - 不读取、打印、保存或提交密码、Cookie、会话参数和浏览器配置。
-- 官方 Excel、页面快照和中间解析文件只保存在本轮系统临时目录，完成或失败后删除。
+- 官方导出、页面快照和中间解析文件只保存在系统临时目录。
 - 数据质量失败时不覆盖上一版有效 `current.json`。
-- 仓库中的测试数据必须从零合成，不能由真实账号数据轻微改写而来。
+- 测试数据必须从零合成，不能由真实账号数据轻微改写。
+- 登录态、浏览记录和真实账号数据禁止提交到 Git。
 
 ## 验证
 
