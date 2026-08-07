@@ -14,12 +14,6 @@ Personal AI Workbench 的两个可独立安装 Agent Skills：
 把本仓库地址发给支持 Agent Skills 的工具，例如 Codex、Claude Code 或 WorkBuddy：
 
 ```text
-https://github.com/oyorf/personal-workbench-skills
-```
-
-可以直接使用这条指令：
-
-```text
 请从这个仓库安装 research-social-insights 和 douyin-account-data，
 阅读各自的 SKILL.md、运行要求和安全边界，并适配到你自己的 Skill 目录。
 ```
