@@ -15,14 +15,14 @@ fi
 
 if [[ "$mode" == "collect-weekly" ]]; then
   case "$output_dir" in
-    /tmp/douyin-feedback.*/*/00_exports) ;;
+    /tmp/douyin-feedback.*/*/00_exports|*/personal-workbench-douyin.*/*/00_exports) ;;
     *)
       printf 'refusing non-temporary output path: %s\n' "$output_dir" >&2
       exit 65
       ;;
   esac
   case "$snapshot_dir" in
-    /tmp/douyin-feedback.*/*/01_page_snapshots) ;;
+    /tmp/douyin-feedback.*/*/01_page_snapshots|*/personal-workbench-douyin.*/*/01_page_snapshots) ;;
     *)
       printf 'refusing non-temporary snapshot path: %s\n' "$snapshot_dir" >&2
       exit 65
@@ -357,26 +357,29 @@ if (mode === 'probe') {
         }
       }
     }
-    if (workIds.length === 0) throw new Error('首页未发现可用作品详情链接，且未提供 DOUYIN_WORK_IDS')
+    // 当前创作者中心首页不再展示作品详情链接，单作品深度数据改为可选：
+    // 找不到 workIds 时不抛错，analyze 阶段会将其标为 missing，不阻断整轮采集。
+    // 若要采集单作品深度数据，重跑时通过 DOUYIN_WORK_IDS 环境变量显式传入。
+    if (workIds.length === 0) {
+      cliLog(JSON.stringify({ note: '首页未发现有作品详情链接，跳过单作品深度采集（可经 DOUYIN_WORK_IDS 指定）', workIds: [] }))
+    }
     return []
   })
 
   await runStep('账号数据总览', async () => {
     await gotoReady(OPERATION_URL)
-    await waitForButtonCount('导出数据', 2, false)
+    // 当前页面：单个“导出数据”按钮 + 单组 radio（昨日/近7天/近30天）。
+    await waitForButtonCount('导出数据', 1, false)
     const records = []
     const periods = [
-      { ui: '昨天', file: '昨日' },
+      { ui: '昨日', file: '昨日' },
       { ui: '近7天', file: '近7天' },
       { ui: '近30天', file: '近30天' }
     ]
     let sequence = 1
     for (const period of periods) {
-      await clickRadioLabel(period.ui, 0, 2)
-      records.push(await downloadButton({ text: '导出数据', exact: false, index: 0, label: period.file + '-作品数据表现', sequence }))
-      sequence += 1
-      await clickRadioLabel(period.ui, 1, 2)
-      records.push(await downloadButton({ text: '导出数据', exact: false, index: 1, label: period.file + '-粉丝数据表现', sequence }))
+      await clickRadioLabel(period.ui, 0, 1)
+      records.push(await downloadButton({ text: '导出数据', exact: false, index: 0, label: period.file + '-账号数据', sequence }))
       sequence += 1
     }
     return records
@@ -389,7 +392,7 @@ if (mode === 'probe') {
     await clickRadioLabel('投稿分析')
     records.push(...await collectVisibleExports(['投稿概览', '投稿表现'], 7))
     await clickRadioLabel('投稿列表')
-    records.push(...await collectVisibleExports(['投稿列表'], 9))
+    records.push(...await collectVisibleExports(['作品列表导出'], 9))
     await clickRoleExact('tab', '合集')
     await clickRadioLabel('合集分析')
     records.push(...await collectVisibleExports(['合集概览', '合集表现'], 10))
@@ -400,7 +403,14 @@ if (mode === 'probe') {
 
   await runStep('作品列表', async () => {
     await gotoReady(WORK_LIST_URL)
-    return collectVisibleExports(['作品列表'], 13)
+    // 当前 content/manage 页面不再提供“导出数据”按钮；作品列表数据已
+    // 在“投稿与合集”步骤的“投稿列表”导出中覆盖，此处找不到按钮即跳过。
+    const count = await visibleButtonCount('导出数据', false)
+    if (count === 0) {
+      cliLog(JSON.stringify({ note: '作品列表页未找到“导出数据”按钮，跳过（作品列表数据由投稿概览/投稿列表导出覆盖）' }))
+      return []
+    }
+    return collectVisibleExports(['作品列表导出'], 13)
   })
 
   let nextSequence = 14
