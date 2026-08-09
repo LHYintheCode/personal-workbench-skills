@@ -82,9 +82,16 @@ if [[ -n "$work_ids" && ! "$work_ids" =~ ^[0-9]+(,[0-9]+)*$ ]]; then
 fi
 
 cleanup() {
-  if [[ -n "$temp_root" ]]; then
+  if [[ -n "$temp_root" && -d "$temp_root" ]]; then
     case "$temp_root" in
-      */personal-workbench-douyin.*) rm -rf -- "$temp_root" ;;
+      */personal-workbench-douyin.*)
+        # 改动：退出前先把原始采集（Excel/页面快照/run_manifest）保留到私人 Vault 的 _rescue，
+        # 避免部分采集被判失败后整目录被 rm，导致真实数据丢失、无法事后补救。
+        rescue_dir="$store_parent/douyin/_rescue/$(basename "$temp_root")"
+        mkdir -p "$(dirname "$rescue_dir")"
+        cp -R "$temp_root" "$rescue_dir" 2>/dev/null || true
+        rm -rf -- "$temp_root"
+        ;;
     esac
   fi
   if [[ -n "$store_stage" ]]; then
@@ -170,17 +177,24 @@ if [[ -s "$store_root/works.csv" ]]; then
   previous_args=(--previous "$store_root/works.csv")
 fi
 
-python3 "$script_dir/analyze_snapshot.py" \
-  --vault-root "$vault_root" \
-  --config "$skill_dir/assets/config.example.json" \
-  --snapshot "$snapshot_root" \
-  "${previous_args[@]}" \
-  --output "$analysis_dir" \
-  --no-workflow-writeback \
-  --no-latest-pointer \
-  --published-source-root "30_self_media/douyin" \
-  --published-work-list "30_self_media/douyin/works.csv" \
-  --published-previous "30_self_media/douyin/work-history.csv"
+run_analyze() {
+  python3 "$script_dir/analyze_snapshot.py" \
+    --vault-root "$vault_root" \
+    --config "$skill_dir/assets/config.example.json" \
+    --snapshot "$snapshot_root" \
+    "$@" \
+    --output "$analysis_dir" \
+    --no-workflow-writeback \
+    --no-latest-pointer \
+    --published-source-root "30_self_media/douyin" \
+    --published-work-list "30_self_media/douyin/works.csv" \
+    --published-previous "30_self_media/douyin/work-history.csv"
+}
+if [[ ${#previous_args[@]} -gt 0 ]]; then
+  run_analyze "${previous_args[@]}"
+else
+  run_analyze
+fi
 
 quality_status="$(jq -r '.data_quality.status // empty' "$analysis_dir/analysis.json")"
 if [[ -z "$quality_status" || "$quality_status" == "failed" ]]; then
@@ -196,13 +210,22 @@ if [[ -s "$store_root/current.json" ]]; then
   existing_args=(--existing "$store_root/current.json")
 fi
 
-node "$script_dir/publish_workbench_data.mjs" \
-  --vault "$vault_root" \
-  --workbench-root "$workbench_root" \
-  --snapshot "$snapshot_root" \
-  --analysis "$analysis_dir/analysis.json" \
-  --output "$store_stage" \
-  "${existing_args[@]}"
+if [[ ${#existing_args[@]} -gt 0 ]]; then
+  node "$script_dir/publish_workbench_data.mjs" \
+    --vault "$vault_root" \
+    --workbench-root "$workbench_root" \
+    --snapshot "$snapshot_root" \
+    --analysis "$analysis_dir/analysis.json" \
+    --output "$store_stage" \
+    "${existing_args[@]}"
+else
+  node "$script_dir/publish_workbench_data.mjs" \
+    --vault "$vault_root" \
+    --workbench-root "$workbench_root" \
+    --snapshot "$snapshot_root" \
+    --analysis "$analysis_dir/analysis.json" \
+    --output "$store_stage"
+fi
 
 backup_root="$store_parent/.douyin-backup-$cycle_stamp-$$"
 if [[ -e "$backup_root" ]]; then
